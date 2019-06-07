@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="images\anner.gif" />
     <None Remove="images\eggplant.png" />
+    <None Remove="images\hmmm.png" />
     <None Remove="images\love.gif" />
     <None Remove="images\soap.jpg" />
     <None Remove="images\what.png" />
@@ -26,6 +27,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\eggplant.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\hmmm.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\mlg.png">

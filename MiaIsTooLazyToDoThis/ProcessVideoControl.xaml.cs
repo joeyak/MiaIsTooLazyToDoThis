@@ -81,8 +81,15 @@ namespace MiaIsTooLazyToDoThis
 
         private async Task ProcessFile()
         {
+            StatusLabel.ToolTip = "Process Info";
             var start = DateTime.Now;
-            StatusLabel.ToolTip = "";
+
+            var sw = Stopwatch.StartNew();
+            void SetTooltip(string msg, bool reset = true)
+            {
+                StatusLabel.ToolTip = $"{StatusLabel.ToolTip}\n{msg} => {sw.Elapsed}";
+                sw.Restart();
+            }
 
             SetStatus(Status.Wait, "Cleaning Up");
             _model.ClearTempDir();
@@ -90,18 +97,19 @@ namespace MiaIsTooLazyToDoThis
             SetStatus(Status.Anner, "Getting Active Times");
             SortedSet<int> activeTimes = await _model.GetActiveTimes();
             List<TimeRange> activeRanges = _model.GetActiveTimeRanges(activeTimes);
-
-            StatusLabel.ToolTip = $"Frame Range Count: {activeRanges.Count}";
+            SetTooltip($"Frame Range Count: {activeRanges.Count}");
 
             SetStatus(Status.Lolly, "Splitting Videos");
             await Task.Run(() => _model.SplitVideo(activeRanges));
+            SetTooltip($"Video Split");
 
-            SetStatus(Status.Soap, "Stiching Videos Together");
+            SetStatus(Status.Soap, "Stitching Videos Together");
             await Task.Run(() => _model.StitchVideos());
+            SetTooltip("Stiching");
 
             SetStatus(Status.What, "Done Processing...What?");
 
-            StatusLabel.ToolTip = $"Time to process:\n{(DateTime.Now - start)}\n{StatusLabel.ToolTip}";
+            SetTooltip($"Time to process: {(DateTime.Now - start)}", false);
         }
 
         private void SetStatus(Status status, string message)

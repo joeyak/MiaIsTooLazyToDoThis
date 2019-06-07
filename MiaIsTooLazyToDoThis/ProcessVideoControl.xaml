@@ -29,7 +29,7 @@
             <Setter Property="Opacity" Value="0.7"/>
         </Style>
     </UserControl.Resources>
-    <Grid Height="450" Width="450">
+    <Grid Height="550" Width="550">
         <Image x:Name="SneezeImage"
                Source="images/sneeze.png"
                Visibility="Hidden"/>
@@ -40,7 +40,7 @@
                Source="images/soap.jpg"
                Visibility="Hidden"/>
         <Image x:Name="KikyoImage"
-               Source="images/hmmm.jpg"
+               Source="images/hmmm.png"
                Visibility="Hidden"/>
         <Image x:Name="WaitImage"
                gif:ImageBehavior.AnimatedSource="images/wait.gif"
@@ -78,6 +78,14 @@
                     SmallChange="0.1"
                     LargeChange="0.5"
                     TickFrequency="0.1"/>
+            <Label Content="{Binding StitchSeconds}" ContentStringFormat="{}{0:0.0} Stitch Seconds"/>
+            <Slider Margin="50,10"
+                    Minimum="0"
+                    Maximum="10"
+                    Value="{Binding StitchSeconds}"
+                    SmallChange="1"
+                    LargeChange="1"
+                    TickFrequency="1"/>
             <Button x:Name="ProcessoButton" IsEnabled="False" Content="Process Video"/>
             <Label x:Name="StatusLabel"
                    FontSize="28"

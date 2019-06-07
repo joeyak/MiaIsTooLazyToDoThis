@@ -55,6 +55,17 @@ namespace MiaIsTooLazyToDoThis
             }
         }
 
+        private int _stitchSeconds = 3;
+        public int StitchSeconds
+        {
+            get { return _stitchSeconds; }
+            set
+            {
+                _stitchSeconds = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StitchSeconds)));
+            }
+        }
+
         private double _diffPercent = 0.9995;
         public double DiffPercent
         {
@@ -153,9 +164,17 @@ namespace MiaIsTooLazyToDoThis
                 Start = activeTimes.First(),
                 End = activeTimes.First(),
             };
+
+
+            var pad = (int)(_stitchSeconds * _videoInfo.FrameRate);
+            if (pad == 0)
+            {
+                pad = 1;
+            }
+
             foreach (var time in activeTimes.Skip(1))
             {
-                if (range.End + 1 == time)
+                if (range.End + pad >= time)
                 {
                     range.End = time;
                 }
@@ -194,6 +213,7 @@ namespace MiaIsTooLazyToDoThis
                     "-y",
                     "-loglevel quiet",
                     $"-i {_info.FullName}",
+                    "-q:v 0",
                     $"-ss {((float)ranges[i].Start)/_videoInfo.FrameRate}",
                     $"-frames:v {ranges[i].End - ranges[i].Start}",
                     fileName,
@@ -222,6 +242,7 @@ namespace MiaIsTooLazyToDoThis
                     "-f concat",
                     "-safe 0",
                     $"-i {_concatFile}",
+                    "-q:v 0",
                     _info.FullName.Replace(ext, "_new" + ext),
                 }),
                 CreateNoWindow = true,
