@@ -201,9 +201,7 @@ namespace MiaIsTooLazyToDoThis
                 throw new Exception("File was empty");
             }
 
-            var fileNames = new ConcurrentBag<string>();
-            Parallel.For(0, ranges.Count(), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, (i) =>
-            {
+            for(var i = 0; i < ranges.Count(); i++) {
                 var fileName = Path.Combine(Dir, $"sp_{i}{Path.GetExtension(_info.Name)}");
 
                 var startInfo = new ProcessStartInfo()
@@ -223,10 +221,9 @@ namespace MiaIsTooLazyToDoThis
                 };
                 Process.Start(startInfo).WaitForExit();
 
-                fileNames.Add("file " +fileName.Replace(@"\", @"\\"));
-            });
+                File.AppendAllText(_concatFile, $"file {fileName.Replace(@"\", @"\\")}\n");
+            }
 
-            File.AppendAllLines(_concatFile, fileNames.OrderBy(x => x));
         }
 
         public void StitchVideos()
