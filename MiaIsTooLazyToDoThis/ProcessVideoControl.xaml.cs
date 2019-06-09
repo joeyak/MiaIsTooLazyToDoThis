@@ -12,6 +12,8 @@ namespace MiaIsTooLazyToDoThis
 {
     public partial class ProcessVideoControl : UserControl
     {
+        private string _info = string.Empty;
+
         private enum Status
         {
             Sneeze,
@@ -81,14 +83,19 @@ namespace MiaIsTooLazyToDoThis
 
         private async Task ProcessFile()
         {
-            StatusLabel.ToolTip = "Process Info";
+            _info = "Process Info";
             var start = DateTime.Now;
 
             var sw = Stopwatch.StartNew();
-            void SetTooltip(string msg, bool reset = true)
+            void AddToInfo(string msg, bool addTime = true)
             {
-                StatusLabel.ToolTip = $"{StatusLabel.ToolTip}\n{msg} => {sw.Elapsed}";
-                sw.Restart();
+                _info += "\n" + msg;
+
+                if (addTime)
+                {
+                    _info += $" => " + sw.Elapsed.ToString();
+                    sw.Restart();
+                }
             }
 
             SetStatus(Status.Wait, "Cleaning Up");
@@ -97,19 +104,19 @@ namespace MiaIsTooLazyToDoThis
             SetStatus(Status.Anner, "Getting Active Times");
             SortedSet<int> activeTimes = await _model.GetActiveTimes();
             List<TimeRange> activeRanges = _model.GetActiveTimeRanges(activeTimes);
-            SetTooltip($"Frame Range Count: {activeRanges.Count}");
+            AddToInfo($"Frame Range Count: {activeRanges.Count}");
 
             SetStatus(Status.Lolly, "Splitting Videos");
             await Task.Run(() => _model.SplitVideo(activeRanges));
-            SetTooltip($"Video Split");
+            AddToInfo($"Video Split");
 
             SetStatus(Status.Soap, "Stitching Videos Together");
             await Task.Run(() => _model.StitchVideos());
-            SetTooltip("Stiching");
+            AddToInfo("Stiching");
 
             SetStatus(Status.What, "Done Processing...What?");
 
-            SetTooltip($"Time to process: {(DateTime.Now - start)}", false);
+            AddToInfo($"Time to process: {(DateTime.Now - start)}", false);
         }
 
         private void SetStatus(Status status, string message)
@@ -126,8 +133,9 @@ namespace MiaIsTooLazyToDoThis
         }
 
         private void OpenTempDir_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            Process.Start("explorer.exe", _model.Dir);
-        }
+            => Process.Start("explorer.exe", _model.Dir);
+
+        private void MenuItem_Click(object sender, System.Windows.RoutedEventArgs e)
+            => Forms.MessageBox.Show(_info);
     }
 }

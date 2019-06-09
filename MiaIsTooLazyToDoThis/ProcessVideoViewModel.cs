@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -200,10 +201,10 @@ namespace MiaIsTooLazyToDoThis
                 throw new Exception("File was empty");
             }
 
-            for (var i = 0; i < ranges.Count(); i++)
+            var fileNames = new ConcurrentBag<string>();
+            Parallel.For(0, ranges.Count(), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, (i) =>
             {
                 var fileName = Path.Combine(Dir, $"sp_{i}{Path.GetExtension(_info.Name)}");
-                File.AppendAllText(_concatFile, $"file {fileName.Replace(@"\", @"\\")}\n");
 
                 var startInfo = new ProcessStartInfo()
                 {
@@ -211,7 +212,7 @@ namespace MiaIsTooLazyToDoThis
                     Arguments = string.Join(" ", new string[]
                     {
                     "-y",
-                    "-loglevel quiet",
+                    "-v quiet",
                     $"-i {_info.FullName}",
                     "-q:v 0",
                     $"-ss {((float)ranges[i].Start)/_videoInfo.FrameRate}",
@@ -221,7 +222,11 @@ namespace MiaIsTooLazyToDoThis
                     CreateNoWindow = true,
                 };
                 Process.Start(startInfo).WaitForExit();
-            }
+
+                fileNames.Add("file " +fileName.Replace(@"\", @"\\"));
+            });
+
+            File.AppendAllLines(_concatFile, fileNames.OrderBy(x => x));
         }
 
         public void StitchVideos()
@@ -238,7 +243,7 @@ namespace MiaIsTooLazyToDoThis
                 Arguments = string.Join(" ", new string[]
                 {
                     "-y",
-                    "-loglevel quiet",
+                    "-v quiet",
                     "-f concat",
                     "-safe 0",
                     $"-i {_concatFile}",

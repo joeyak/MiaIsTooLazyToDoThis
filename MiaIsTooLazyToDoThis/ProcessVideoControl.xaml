@@ -9,6 +9,7 @@
     <UserControl.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Open Temp Dir" Click="OpenTempDir_Click"/>
+            <MenuItem Header="Show Info Log" Click="MenuItem_Click"/>
         </ContextMenu>
     </UserControl.ContextMenu>
     <UserControl.Resources>
