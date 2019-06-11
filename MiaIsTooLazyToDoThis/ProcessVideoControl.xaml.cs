@@ -23,6 +23,7 @@ namespace MiaIsTooLazyToDoThis
             Soap,
             What,
             Kikyo,
+            LudicrousSpeed,
         }
 
         private class ImageInfo
@@ -52,10 +53,12 @@ namespace MiaIsTooLazyToDoThis
                 {Status.Soap, new ImageInfo(SoapImage, Color.FromRgb(203, 109, 81)) }, // Copper Red - Lolly
                 {Status.What, new ImageInfo(WhatImage, Color.FromRgb(240, 0, 0)) }, // Red - vital
                 {Status.Kikyo, new ImageInfo(KikyoImage, Color.FromRgb(0, 0, 128)) }, // Navy - Kikyo
+                {Status.LudicrousSpeed, new ImageInfo(LudicrousSpeedImage, Color.FromRgb(42, 139, 35)) }, // Forest Green - Zorch
             };
 
             ChooseButton.Click += async (o, e) => await ChooseFile();
             ProcessoButton.Click += async (o, e) => await ProcessFile();
+            SpeedupButton.Click += async (o, e) => await SpeedupFile();
 
             Dispatcher.ShutdownStarted += (o, e) =>
             {
@@ -74,11 +77,20 @@ namespace MiaIsTooLazyToDoThis
             var ofd = new Forms.OpenFileDialog();
             if (ofd.ShowDialog() == Forms.DialogResult.OK)
             {
-                _model.Info = new FileInfo(ofd.FileName);
-                await _model.GetFileInfo();
+                await SetFile(ofd.FileName);
             }
 
-            ProcessoButton.IsEnabled = !(_model.Info is null);
+            var enableButtons = !(_model.Info is null);
+            ProcessoButton.IsEnabled = enableButtons;
+            SpeedupButton.IsEnabled = enableButtons;
+            CutPanel.Visibility = System.Windows.Visibility.Collapsed;
+            SpeedPanel.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private async Task SetFile(string path)
+        {
+            _model.Info = new FileInfo(path);
+            await _model.GetFileInfo();
         }
 
         private async Task ProcessFile()
@@ -111,12 +123,29 @@ namespace MiaIsTooLazyToDoThis
             AddToInfo($"Video Split");
 
             SetStatus(Status.Soap, "Stitching Videos Together");
-            await Task.Run(() => _model.StitchVideos());
+            // This is async so the UI doesn't block, but the method
+            // to call is not async
+            var newFile = await Task.Run(() => _model.StitchVideos());
             AddToInfo("Stiching");
+
+            await SetFile(newFile);
 
             SetStatus(Status.What, "Done Processing...What?");
 
             AddToInfo($"Time to process: {(DateTime.Now - start)}", false);
+        }
+
+        private async Task SpeedupFile()
+        {
+            _info = "Speedup Info";
+            SetStatus(Status.Kikyo, "Speeding Up Video");
+
+            await Task.Delay(4000);
+
+            var start = DateTime.Now;
+            await _model.SpeedupVideo();
+
+            SetStatus(Status.LudicrousSpeed, "LUDICROUS SPEED REACHED!");
         }
 
         private void SetStatus(Status status, string message)

@@ -226,7 +226,7 @@ namespace MiaIsTooLazyToDoThis
 
         }
 
-        public void StitchVideos()
+        public string StitchVideos()
         {
             if (_info is null)
             {
@@ -234,6 +234,7 @@ namespace MiaIsTooLazyToDoThis
             }
 
             var ext = Path.GetExtension(_info.Name);
+            var newFile = _info.FullName.Replace(ext, "_new" + ext);
             var startInfo = new ProcessStartInfo()
             {
                 FileName = _ffmpegPath,
@@ -245,11 +246,32 @@ namespace MiaIsTooLazyToDoThis
                     "-safe 0",
                     $"-i {_concatFile}",
                     "-q:v 0",
-                    _info.FullName.Replace(ext, "_new" + ext),
+                    newFile,
                 }),
                 CreateNoWindow = true,
             };
             Process.Start(startInfo).WaitForExit();
+            return newFile;
+        }
+
+        public async Task SpeedupVideo()
+        {
+            //var startInfo = new ProcessStartInfo()
+            //{
+            //    FileName = _ffmpegPath,
+            //    Arguments = string.Join(" ", new string[]
+            //    {
+            //        "-y",
+            //        "-v quiet",
+            //        "-f concat",
+            //        "-safe 0",
+            //        $"-i {_concatFile}",
+            //        "-q:v 0",
+            //        newFile,
+            //    }),
+            //    CreateNoWindow = true,
+            //};
+            //Process.Start(startInfo).WaitForExit();
         }
 
         public void ClearTempDir()

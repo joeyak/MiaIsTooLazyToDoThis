@@ -29,6 +29,10 @@
             <Setter Property="Grid.RowSpan" Value="2"/>
             <Setter Property="Opacity" Value="0.7"/>
         </Style>
+        <Style TargetType="StackPanel">
+            <Setter Property="Margin" Value="10,10"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
     <Grid Height="550" Width="550">
         <Image x:Name="SneezeImage"
@@ -43,6 +47,9 @@
         <Image x:Name="KikyoImage"
                Source="images/hmmm.png"
                Visibility="Hidden"/>
+        <Image x:Name="LudicrousSpeedImage"
+               Source="images/ludicrousSpeed.png"
+               Visibility="Hidden"/>
         <Image x:Name="WaitImage"
                gif:ImageBehavior.AnimatedSource="images/wait.gif"
                Visibility="Hidden"/>
@@ -52,42 +59,60 @@
         <Image x:Name="LollyImage"
                gif:ImageBehavior.AnimatedSource="images/love.gif"
                Visibility="Hidden"/>
-        <StackPanel Margin="10,10" VerticalAlignment="Center">
-            <Label Content="Choose File to Timelapse"/>
-            <Button x:Name="ChooseButton" Content="Choose Video"/>
-            <Label Content="Video Stats"/>
-            <Label Content="{Binding Info.Name}"
-                   ContentStringFormat="{}File: {0}"
-                   ToolTip="{Binding Info.FullName}"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label Content="{Binding VideoInfo.Duration}" ContentStringFormat="{}[{0}]"/>
-                <Label Content="{Binding VideoInfo.FrameRate}" ContentStringFormat="{}{0} fps"/>
+        <StackPanel>
+            <StackPanel>
+                <Label Content="Choose File to Process"/>
+                <Button x:Name="ChooseButton" Content="Choose Video"/>
+                <Label Content="Video Stats"/>
+                <Label Content="{Binding Info.Name}"
+                       ContentStringFormat="{}File: {0}"
+                       ToolTip="{Binding Info.FullName}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Content="{Binding VideoInfo.Duration}" ContentStringFormat="{}[{0}]"/>
+                    <Label Content="{Binding VideoInfo.FrameRate}" ContentStringFormat="{}{0} fps"/>
+                </StackPanel>
             </StackPanel>
-            <Label Content="{Binding DiffPercent}" ContentStringFormat="{}{0:0.0000}% Diff"/>
-            <Slider Margin="50,10"
-                    Minimum="0.990"
-                    Maximum="1.0"
-                    Value="{Binding DiffPercent}"
-                    SmallChange="0.0001"
-                    LargeChange="0.001"
-                    TickFrequency=".001"/>
-            <Label Content="{Binding VideoOffset}" ContentStringFormat="{}{0:0.0} Offset"/>
-            <Slider Margin="50,10"
-                    Minimum="0.5"
-                    Maximum="10.0"
-                    Value="{Binding VideoOffset}"
-                    SmallChange="0.1"
-                    LargeChange="0.5"
-                    TickFrequency="0.1"/>
-            <Label Content="{Binding StitchSeconds}" ContentStringFormat="{}{0:0.0} Stitch Seconds"/>
-            <Slider Margin="50,10"
-                    Minimum="0"
-                    Maximum="10"
-                    Value="{Binding StitchSeconds}"
-                    SmallChange="1"
-                    LargeChange="1"
-                    TickFrequency="1"/>
-            <Button x:Name="ProcessoButton" IsEnabled="False" Content="Process Video"/>
+            <Grid>
+                <StackPanel  x:Name="CutPanel" Visibility="Hidden">
+                    <Label Content="{Binding DiffPercent}" ContentStringFormat="{}{0:0.0000}% Diff"/>
+                    <Slider Margin="50,10"
+                            Minimum="0.990"
+                            Maximum="1.0"
+                            Value="{Binding DiffPercent}"
+                            SmallChange="0.0001"
+                            LargeChange="0.001"
+                            TickFrequency=".001"/>
+                    <Label Content="{Binding VideoOffset}" ContentStringFormat="{}{0:0.0} Offset"/>
+                    <Slider Margin="50,10"
+                            Minimum="0.5"
+                            Maximum="10.0"
+                            Value="{Binding VideoOffset}"
+                            SmallChange="0.1"
+                            LargeChange="0.5"
+                            TickFrequency="0.1"/>
+                    <Label Content="{Binding StitchSeconds}" ContentStringFormat="{}{0:0.0} Stitch Seconds"/>
+                    <Slider Margin="50,10"
+                            Minimum="0"
+                            Maximum="10"
+                            Value="{Binding StitchSeconds}"
+                            SmallChange="1"
+                            LargeChange="1"
+                            TickFrequency="1"/>
+                    <Button x:Name="ProcessoButton" IsEnabled="False" Content="Process Video"/>
+                </StackPanel>
+                <StackPanel x:Name="SpeedPanel">
+                    <Label Content="{Binding SpeedupRate}" ContentStringFormat="{}{0:0.0}x faster"/>
+                    <Label Content="{Binding SpeedupTime}" ContentStringFormat="{}New Time: {0:0.0}"/>
+                    <Slider Margin="50,10"
+                            Minimum="1"
+                            Maximum="20"
+                            Value="{Binding SpeedupRate}"
+                            SmallChange="0.5"
+                            LargeChange="1"
+                            TickFrequency="1"/>
+                    <Button x:Name="SpeedupButton" IsEnabled="False" Content="Speedup Video"/>
+                </StackPanel>
+            </Grid>
             <Label x:Name="StatusLabel"
                    FontSize="28"
                    FontWeight="ExtraBold"/>

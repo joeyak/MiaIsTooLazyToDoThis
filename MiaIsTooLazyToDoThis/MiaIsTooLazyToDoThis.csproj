@@ -13,9 +13,9 @@
     <None Remove="images\eggplant.png" />
     <None Remove="images\hmmm.png" />
     <None Remove="images\love.gif" />
+    <None Remove="images\ludicrousSpeed.png" />
     <None Remove="images\soap.jpg" />
     <None Remove="images\what.png" />
-    <None Remove="MichaelIsAPain.xaml" />
     <None Remove="mlg.png" />
     <None Remove="ProcessVideoControl.xaml" />
     <None Remove="sneeze.png" />
@@ -66,6 +66,12 @@
 
   <ItemGroup>
     <Content Include="images\what.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="images\ludicrousSpeed.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
