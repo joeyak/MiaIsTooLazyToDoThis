@@ -34,7 +34,7 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <Grid Height="550" Width="550">
+    <Grid Height="600" Width="600">
         <Image x:Name="SneezeImage"
                Source="images/sneeze.png"
                Visibility="Hidden"/>
@@ -73,7 +73,7 @@
                 </StackPanel>
             </StackPanel>
             <Grid>
-                <StackPanel  x:Name="CutPanel" Visibility="Hidden">
+                <StackPanel  x:Name="CutPanel">
                     <Label Content="{Binding DiffPercent}" ContentStringFormat="{}{0:0.0000}% Diff"/>
                     <Slider Margin="50,10"
                             Minimum="0.990"
@@ -100,7 +100,7 @@
                             TickFrequency="1"/>
                     <Button x:Name="ProcessoButton" IsEnabled="False" Content="Process Video"/>
                 </StackPanel>
-                <StackPanel x:Name="SpeedPanel">
+                <StackPanel x:Name="SpeedPanel" Visibility="Collapsed">
                     <Label Content="{Binding SpeedupRate}" ContentStringFormat="{}{0:0.0}x faster"/>
                     <Label Content="{Binding SpeedupTime}" ContentStringFormat="{}New Time: {0:0.0}"/>
                     <Slider Margin="50,10"

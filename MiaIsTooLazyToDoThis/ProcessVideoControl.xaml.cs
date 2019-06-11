@@ -83,8 +83,6 @@ namespace MiaIsTooLazyToDoThis
             var enableButtons = !(_model.Info is null);
             ProcessoButton.IsEnabled = enableButtons;
             SpeedupButton.IsEnabled = enableButtons;
-            CutPanel.Visibility = System.Windows.Visibility.Collapsed;
-            SpeedPanel.Visibility = System.Windows.Visibility.Visible;
         }
 
         private async Task SetFile(string path)
@@ -129,6 +127,8 @@ namespace MiaIsTooLazyToDoThis
             AddToInfo("Stiching");
 
             await SetFile(newFile);
+            CutPanel.Visibility = System.Windows.Visibility.Collapsed;
+            SpeedPanel.Visibility = System.Windows.Visibility.Visible;
 
             SetStatus(Status.What, "Done Processing...What?");
 
@@ -140,10 +140,8 @@ namespace MiaIsTooLazyToDoThis
             _info = "Speedup Info";
             SetStatus(Status.Kikyo, "Speeding Up Video");
 
-            await Task.Delay(4000);
-
             var start = DateTime.Now;
-            await _model.SpeedupVideo();
+            await Task.Run(() => _model.SpeedupVideo());
 
             SetStatus(Status.LudicrousSpeed, "LUDICROUS SPEED REACHED!");
         }

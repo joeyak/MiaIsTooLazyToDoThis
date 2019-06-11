@@ -233,8 +233,7 @@ namespace MiaIsTooLazyToDoThis
                 throw new Exception("File was empty");
             }
 
-            var ext = Path.GetExtension(_info.Name);
-            var newFile = _info.FullName.Replace(ext, "_new" + ext);
+            var newFile = NewFileName(_info.FullName, "_cut");
             var startInfo = new ProcessStartInfo()
             {
                 FileName = _ffmpegPath,
@@ -254,24 +253,29 @@ namespace MiaIsTooLazyToDoThis
             return newFile;
         }
 
-        public async Task SpeedupVideo()
+        public void SpeedupVideo()
         {
-            //var startInfo = new ProcessStartInfo()
-            //{
-            //    FileName = _ffmpegPath,
-            //    Arguments = string.Join(" ", new string[]
-            //    {
-            //        "-y",
-            //        "-v quiet",
-            //        "-f concat",
-            //        "-safe 0",
-            //        $"-i {_concatFile}",
-            //        "-q:v 0",
-            //        newFile,
-            //    }),
-            //    CreateNoWindow = true,
-            //};
-            //Process.Start(startInfo).WaitForExit();
+            if (_info is null)
+            {
+                throw new Exception("File was empty");
+            }
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = _ffmpegPath,
+                Arguments = string.Join(" ", new string[]
+                {
+                    "-y",
+                    "-v quiet",
+                    $"-i {_info.FullName}",
+                    "-r 300",
+                    $"-vf \"setpts=0.1*PTS\"",
+                    "-to 4",
+                    NewFileName(_info.FullName, "_X10"),
+                }),
+                CreateNoWindow = true,
+            };
+            Process.Start(startInfo).WaitForExit();
         }
 
         public void ClearTempDir()
@@ -280,6 +284,12 @@ namespace MiaIsTooLazyToDoThis
             {
                 File.Delete(file);
             }
+        }
+
+        private string NewFileName(string path, string suffix)
+        {
+            var ext = Path.GetExtension(path);
+            return path.Replace(ext, suffix+ ext);
         }
     }
 }
