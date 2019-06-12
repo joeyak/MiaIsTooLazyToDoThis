@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Forms = System.Windows.Forms;
+using System.Windows;
 
 namespace MiaIsTooLazyToDoThis
 {
@@ -60,6 +61,9 @@ namespace MiaIsTooLazyToDoThis
             ProcessoButton.Click += async (o, e) => await ProcessFile();
             SpeedupButton.Click += async (o, e) => await SpeedupFile();
 
+            CutPanelButton.Click += (o, e) => ChangePanelVisibility(false);
+            SpeedupPanelButton.Click += (o, e) => ChangePanelVisibility(true);
+
             Dispatcher.ShutdownStarted += (o, e) =>
             {
                 try
@@ -70,6 +74,7 @@ namespace MiaIsTooLazyToDoThis
             };
 
             SetStatus(Status.Sneeze, "");
+            ChangePanelVisibility(true);
         }
 
         private async Task ChooseFile()
@@ -127,12 +132,25 @@ namespace MiaIsTooLazyToDoThis
             AddToInfo("Stiching");
 
             await SetFile(newFile);
-            CutPanel.Visibility = System.Windows.Visibility.Collapsed;
-            SpeedPanel.Visibility = System.Windows.Visibility.Visible;
+
+            ChangePanelVisibility(false);
 
             SetStatus(Status.What, "Done Processing...What?");
 
             AddToInfo($"Time to process: {(DateTime.Now - start)}", false);
+        }
+
+        private void ChangePanelVisibility(bool enableCut)
+        {
+            CutPanelButton.IsEnabled = enableCut;
+            CutPanel.Visibility = enableCut ?
+                Visibility.Visible :
+                Visibility.Collapsed;
+
+            SpeedupPanelButton.IsEnabled = !enableCut;
+            SpeedPanel.Visibility = enableCut ?
+                Visibility.Collapsed :
+                Visibility.Visible;
         }
 
         private async Task SpeedupFile()

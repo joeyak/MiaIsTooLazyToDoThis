@@ -34,7 +34,7 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <Grid Height="600" Width="600">
+    <Grid Height="750" Width="750">
         <Image x:Name="SneezeImage"
                Source="images/sneeze.png"
                Visibility="Hidden"/>
@@ -60,6 +60,10 @@
                gif:ImageBehavior.AnimatedSource="images/love.gif"
                Visibility="Hidden"/>
         <StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="CutPanelButton" Content="Speedup Panel"/>
+                <Button x:Name="SpeedupPanelButton" Content="Process Panel"/>
+            </StackPanel>
             <StackPanel>
                 <Label Content="Choose File to Process"/>
                 <Button x:Name="ChooseButton" Content="Choose Video"/>

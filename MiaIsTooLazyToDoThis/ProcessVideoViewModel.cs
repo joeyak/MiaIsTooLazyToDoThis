@@ -23,7 +23,7 @@ namespace MiaIsTooLazyToDoThis
         private FileInfo? _info;
         public FileInfo? Info
         {
-            get { return _info; }
+            get => _info;
             set
             {
                 if (!(value is null))
@@ -37,18 +37,19 @@ namespace MiaIsTooLazyToDoThis
         private VideoInfo _videoInfo;
         public VideoInfo VideoInfo
         {
-            get { return _videoInfo; }
+            get => _videoInfo;
             set
             {
                 _videoInfo = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VideoInfo)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedupTime)));
             }
         }
 
         private int _frame;
         public int Frame
         {
-            get { return _frame; }
+            get => _frame;
             set
             {
                 _frame = value;
@@ -59,7 +60,7 @@ namespace MiaIsTooLazyToDoThis
         private int _stitchSeconds = 3;
         public int StitchSeconds
         {
-            get { return _stitchSeconds; }
+            get => _stitchSeconds;
             set
             {
                 _stitchSeconds = value;
@@ -70,7 +71,7 @@ namespace MiaIsTooLazyToDoThis
         private double _diffPercent = 0.9995;
         public double DiffPercent
         {
-            get { return _diffPercent; }
+            get => _diffPercent;
             set
             {
                 _diffPercent = value;
@@ -81,13 +82,31 @@ namespace MiaIsTooLazyToDoThis
         private double _videoOffset = 1.5;
         public double VideoOffset
         {
-            get { return _videoOffset; }
+            get => _videoOffset;
             set
             {
                 _videoOffset = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VideoOffset)));
             }
         }
+
+        private double _speedupRate = 10;
+        public double SpeedupRate
+        {
+            get => _speedupRate;
+            set
+            {
+                _speedupRate = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedupRate)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedupTime)));
+            }
+        }
+
+        public TimeSpan SpeedupTime
+        {
+            get => new TimeSpan(0, 0, 0, 0, (int)(_videoInfo.Duration.TotalMilliseconds * (1 / _speedupRate)));
+        }
+
 
         public ProcessVideoViewModel()
         {
@@ -201,7 +220,8 @@ namespace MiaIsTooLazyToDoThis
                 throw new Exception("File was empty");
             }
 
-            for(var i = 0; i < ranges.Count(); i++) {
+            for (var i = 0; i < ranges.Count(); i++)
+            {
                 var fileName = Path.Combine(Dir, $"sp_{i}{Path.GetExtension(_info.Name)}");
 
                 var startInfo = new ProcessStartInfo()
@@ -268,10 +288,10 @@ namespace MiaIsTooLazyToDoThis
                     "-y",
                     "-v quiet",
                     $"-i {_info.FullName}",
-                    "-r 300",
-                    $"-vf \"setpts=0.1*PTS\"",
-                    "-to 4",
-                    NewFileName(_info.FullName, "_X10"),
+                    $"-r {_speedupRate*_videoInfo.FrameRate}",
+                    $"-vf \"setpts={1/_speedupRate}*PTS\"",
+                    $"-to {SpeedupTime.TotalSeconds}",
+                    NewFileName(_info.FullName, $"_X{_speedupRate}"),
                 }),
                 CreateNoWindow = true,
             };
@@ -289,7 +309,7 @@ namespace MiaIsTooLazyToDoThis
         private string NewFileName(string path, string suffix)
         {
             var ext = Path.GetExtension(path);
-            return path.Replace(ext, suffix+ ext);
+            return path.Replace(ext, suffix + ext);
         }
     }
 }
