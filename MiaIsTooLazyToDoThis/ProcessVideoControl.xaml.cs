@@ -13,6 +13,10 @@ namespace MiaIsTooLazyToDoThis
 {
     public partial class ProcessVideoControl : UserControl
     {
+        private const string _prefixInfo = "INFO";
+        private const string _prefixError = "ERROR";
+        private const string _logFile = "log.txt";
+
         private string _info = string.Empty;
 
         private enum Status
@@ -42,8 +46,14 @@ namespace MiaIsTooLazyToDoThis
         {
             _model = new ProcessVideoViewModel();
             DataContext = _model;
-            InitializeComponent();
 
+            if (File.Exists(_logFile))
+            {
+                File.WriteAllText(_logFile.Replace(".txt", ".old.txt"), File.ReadAllText(_logFile));
+            }
+            File.WriteAllText(_logFile, $"[{DateTime.Now}] {_prefixInfo}:: Starting ProcessVideo Window\r\n");
+
+            InitializeComponent();
 
             _images = new Dictionary<Status, ImageInfo>()
             {
@@ -58,8 +68,8 @@ namespace MiaIsTooLazyToDoThis
             };
 
             ChooseButton.Click += async (o, e) => await ChooseFile();
-            ProcessoButton.Click += async (o, e) => await ProcessFile();
-            SpeedupButton.Click += async (o, e) => await SpeedupFile();
+            ProcessoButton.Click += async (o, e) => await WrapError(ProcessFile);
+            SpeedupButton.Click += async (o, e) => await WrapError(SpeedupFile);
 
             CutPanelButton.Click += (o, e) => ChangePanelVisibility(false);
             SpeedupPanelButton.Click += (o, e) => ChangePanelVisibility(true);
@@ -75,6 +85,21 @@ namespace MiaIsTooLazyToDoThis
 
             SetStatus(Status.Sneeze, "");
             ChangePanelVisibility(true);
+        }
+
+        private async Task WrapError(Func<Task> func)
+        {
+            try
+            {
+                await func.Invoke();
+            }
+            catch (Exception e)
+            {
+                Log(_prefixError, e.Message);
+                Log(_prefixError, e.StackTrace);
+                Process.Start("notepad.exe", _logFile);
+                throw;
+            }
         }
 
         private async Task ChooseFile()
@@ -118,6 +143,12 @@ namespace MiaIsTooLazyToDoThis
 
             SetStatus(Status.Anner, "Getting Active Times");
             SortedSet<int> activeTimes = await _model.GetActiveTimes();
+            if (activeTimes.Count == 0)
+            {
+                SetStatus(Status.What, "Um...no active times found");
+                return;
+            }
+
             List<TimeRange> activeRanges = _model.GetActiveTimeRanges(activeTimes);
             AddToInfo($"Frame Range Count: {activeRanges.Count}");
 
@@ -166,21 +197,26 @@ namespace MiaIsTooLazyToDoThis
 
         private void SetStatus(Status status, string message)
         {
+            Log(_prefixInfo, message);
+
             // Hide all images
             foreach (ImageInfo info in _images.Values)
             {
-                info.Image.Visibility = System.Windows.Visibility.Hidden;
+                info.Image.Visibility = Visibility.Hidden;
             }
-            _images[status].Image.Visibility = System.Windows.Visibility.Visible;
-            StatusLabel.Content = message;
+            _images[status].Image.Visibility = Visibility.Visible;
+            StatusLabel.Text = message;
             StatusLabel.Foreground = new SolidColorBrush(_images[status].Color);
             InvalidateVisual();
         }
 
-        private void OpenTempDir_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Log(string prefix, string message)
+            => File.AppendAllText(_logFile, $"[{DateTime.Now}] {prefix}:: {message}\r\n");
+
+        private void OpenTempDir_Click(object sender, RoutedEventArgs e)
             => Process.Start("explorer.exe", _model.Dir);
 
-        private void MenuItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
             => Forms.MessageBox.Show(_info);
     }
 }
