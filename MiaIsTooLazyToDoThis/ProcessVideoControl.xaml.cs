@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Forms = System.Windows.Forms;
-using System.Windows;
 
 namespace MiaIsTooLazyToDoThis
 {
@@ -96,7 +95,7 @@ namespace MiaIsTooLazyToDoThis
             catch (Exception e)
             {
                 Log(_prefixError, e.Message);
-                Log(_prefixError, e.StackTrace);
+                Log(_prefixError, e.StackTrace ?? "");
                 Process.Start("notepad.exe", _logFile);
                 throw;
             }
@@ -104,8 +103,8 @@ namespace MiaIsTooLazyToDoThis
 
         private async Task ChooseFile()
         {
-            var ofd = new Forms.OpenFileDialog();
-            if (ofd.ShowDialog() == Forms.DialogResult.OK)
+            var ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() ?? false)
             {
                 await SetFile(ofd.FileName);
             }
@@ -142,14 +141,14 @@ namespace MiaIsTooLazyToDoThis
             _model.ClearTempDir();
 
             SetStatus(Status.Anner, "Getting Active Times");
-            SortedSet<int> activeTimes = await _model.GetActiveTimes();
+            var activeTimes = await _model.GetActiveTimes();
             if (activeTimes.Count == 0)
             {
                 SetStatus(Status.What, "Um...no active times found");
                 return;
             }
 
-            List<TimeRange> activeRanges = _model.GetActiveTimeRanges(activeTimes);
+            var activeRanges = _model.GetActiveTimeRanges(activeTimes);
             AddToInfo($"Frame Range Count: {activeRanges.Count}");
 
             SetStatus(Status.Lolly, "Splitting Videos");
@@ -200,7 +199,7 @@ namespace MiaIsTooLazyToDoThis
             Log(_prefixInfo, message);
 
             // Hide all images
-            foreach (ImageInfo info in _images.Values)
+            foreach (var info in _images.Values)
             {
                 info.Image.Visibility = Visibility.Hidden;
             }
@@ -217,6 +216,6 @@ namespace MiaIsTooLazyToDoThis
             => Process.Start("explorer.exe", _model.Dir);
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
-            => Forms.MessageBox.Show(_info);
+            => MessageBox.Show(_info);
     }
 }

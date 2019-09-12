@@ -300,16 +300,23 @@ namespace MiaIsTooLazyToDoThis
 
         public void ClearTempDir()
         {
-            foreach (var file in Directory.GetFiles(Dir))
+            if (Directory.Exists(Dir))
             {
-                File.Delete(file);
+                foreach (var file in Directory.GetFiles(Dir))
+                {
+                    File.Delete(file);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(Dir);
             }
         }
 
         private string NewFileName(string path, string suffix)
         {
             var ext = Path.GetExtension(path);
-            return path.Replace(ext, suffix + ext);
+            return path.Replace(ext ?? "", suffix + ext);
         }
     }
 }

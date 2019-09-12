@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>8.0</LangVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,7 +45,7 @@
 
   <ItemGroup>
     <PackageReference Include="WpfAnimatedGif" Version="1.4.18" />
-    <PackageReference Include="Xabe.FFmpeg" Version="3.1.10" />
+    <PackageReference Include="Xabe.FFmpeg" Version="3.4.0" />
   </ItemGroup>
 
   <ItemGroup>
